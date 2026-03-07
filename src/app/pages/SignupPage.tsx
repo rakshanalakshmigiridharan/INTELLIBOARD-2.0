@@ -113,13 +113,13 @@ export function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <div className="bg-indigo-600 p-3 rounded-lg">
+            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-3 rounded-xl shadow-lg">
               <Brain className="h-8 w-8 text-white" />
             </div>
           </div>
           <CardTitle className="text-2xl text-center">Create an account</CardTitle>
           <CardDescription className="text-center">
-            Sign up for the Generative AI Analytics Platform
+            Sign up for IntelliBoard - AI Analytics Platform
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Sidebar } from './Sidebar';
+import { TopNav } from './TopNav';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,9 +17,12 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      <div className="flex-1 flex flex-col">
+        <TopNav />
+        <main className="flex-1 overflow-auto p-6">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

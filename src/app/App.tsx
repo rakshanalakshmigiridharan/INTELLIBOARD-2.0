@@ -6,6 +6,11 @@ import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { UploadPage } from './pages/UploadPage';
 import { ChatbotPage } from './pages/ChatbotPage';
+import { DataCleaningPage } from './pages/DataCleaningPage';
+import { AIInsightsPage } from './pages/AIInsightsPage';
+import { AIPredictionPage } from './pages/AIPredictionPage';
+import { ReportsPage } from './pages/ReportsPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { Layout } from './components/Layout';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -53,6 +58,56 @@ export default function App() {
               <ProtectedRoute>
                 <Layout>
                   <UploadPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/data-cleaning"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <DataCleaningPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ai-insights"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <AIInsightsPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ai-prediction"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <AIPredictionPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <ReportsPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <SettingsPage />
                 </Layout>
               </ProtectedRoute>
             }
