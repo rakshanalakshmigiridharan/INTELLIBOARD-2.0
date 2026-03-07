@@ -1,11 +1,33 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SignupPage } from './pages/SignupPage';
 import { LoginPage } from './pages/LoginPage';
+import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { UploadPage } from './pages/UploadPage';
 import { ChatbotPage } from './pages/ChatbotPage';
 import { Layout } from './components/Layout';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 export default function App() {
   return (
@@ -14,28 +36,35 @@ export default function App() {
         <Routes>
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route
             path="/dashboard"
             element={
-              <Layout>
-                <DashboardPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <DashboardPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/upload"
             element={
-              <Layout>
-                <UploadPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <UploadPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/chatbot"
             element={
-              <Layout>
-                <ChatbotPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <ChatbotPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route path="/" element={<Navigate to="/login" replace />} />

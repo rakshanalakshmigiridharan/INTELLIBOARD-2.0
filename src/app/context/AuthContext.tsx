@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase, isEmailAuthorized } from '../lib/supabase';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
   name: string;
@@ -7,67 +9,178 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => boolean;
-  signup: (name: string, email: string, password: string) => { success: boolean; message: string };
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTHORIZED_EMAIL = 'ramanilakshmipriya26@gmail.com';
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  // Check for existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    checkUser();
+
+    // Listen for auth changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event);
+      if (session?.user) {
+        await updateUserState(session.user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
-  const signup = (name: string, email: string, password: string) => {
-    if (email !== AUTHORIZED_EMAIL) {
+  async function checkUser() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await updateUserState(session.user);
+      }
+    } catch (error) {
+      console.error('Error checking user:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateUserState(supabaseUser: SupabaseUser) {
+    const userData = {
+      name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'User',
+      email: supabaseUser.email || '',
+    };
+    setUser(userData);
+  }
+
+  const signup = async (name: string, email: string, password: string) => {
+    try {
+      // Check if email is authorized
+      if (!isEmailAuthorized(email)) {
+        return {
+          success: false,
+          message: 'This email is not authorized to access the system. Only specific emails can sign up.',
+        };
+      }
+
+      // Sign up with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name: name,
+          },
+          emailRedirectTo: window.location.origin + '/login',
+        },
+      });
+
+      if (error) {
+        return {
+          success: false,
+          message: error.message,
+        };
+      }
+
+      // Check if email confirmation is required
+      if (data?.user && !data.session) {
+        return {
+          success: true,
+          message: 'Signup successful! Please check your email to verify your account.',
+        };
+      }
+
+      // If auto-confirmed, update user state
+      if (data?.user) {
+        await updateUserState(data.user);
+      }
+
+      return {
+        success: true,
+        message: 'Signup successful!',
+      };
+    } catch (error: any) {
+      console.error('Signup error:', error);
       return {
         success: false,
-        message: 'Access denied. Unauthorized email.',
+        message: error.message || 'An error occurred during signup.',
       };
     }
-
-    const userData = { name, email, password };
-    localStorage.setItem('credentials', JSON.stringify(userData));
-    
-    return {
-      success: true,
-      message: 'Signup successful! You can now login.',
-    };
   };
 
-  const login = (email: string, password: string) => {
-    if (email !== AUTHORIZED_EMAIL) {
-      return false;
-    }
+  const login = async (email: string, password: string) => {
+    try {
+      // Check if email is authorized
+      if (!isEmailAuthorized(email)) {
+        return {
+          success: false,
+          message: 'This email is not authorized to access the system.',
+        };
+      }
 
-    const storedCredentials = localStorage.getItem('credentials');
-    if (!storedCredentials) {
-      return false;
-    }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    const credentials = JSON.parse(storedCredentials);
-    if (credentials.email === email && credentials.password === password) {
-      const userData = { name: credentials.name, email: credentials.email };
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      return true;
-    }
+      if (error) {
+        // Provide user-friendly error messages
+        if (error.message.includes('Invalid login credentials')) {
+          return {
+            success: false,
+            message: 'Invalid email or password. Please try again.',
+          };
+        }
+        if (error.message.includes('Email not confirmed')) {
+          return {
+            success: false,
+            message: 'Please verify your email before logging in. Check your inbox for the verification link.',
+          };
+        }
+        return {
+          success: false,
+          message: error.message,
+        };
+      }
 
-    return false;
+      if (data?.user) {
+        await updateUserState(data.user);
+        return {
+          success: true,
+          message: 'Login successful!',
+        };
+      }
+
+      return {
+        success: false,
+        message: 'Login failed. Please try again.',
+      };
+    } catch (error: any) {
+      console.error('Login error:', error);
+      return {
+        success: false,
+        message: error.message || 'An error occurred during login.',
+      };
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
@@ -78,6 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signup,
         logout,
         isAuthenticated: !!user,
+        loading,
       }}
     >
       {children}

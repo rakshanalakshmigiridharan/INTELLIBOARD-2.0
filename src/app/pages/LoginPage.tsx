@@ -5,14 +5,22 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Brain, AlertCircle } from 'lucide-react';
+import { Brain, AlertCircle, Info } from 'lucide-react';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showAuthorizedEmails, setShowAuthorizedEmails] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const authorizedEmails = [
+    'ramanilakshmipriya26@gmail.com',
+    'rakshanalakshmi.g.cse.2022@snsct.org',
+    'ramanesh.k.cse.2022@snsct.org',
+    'ravichandran.v.cse.2022@snsct.org'
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,12 +31,13 @@ export function LoginPage() {
       return;
     }
 
-    const success = login(email, password);
-    if (success) {
-      navigate('/dashboard');
-    } else {
-      setError('Invalid email or password. Access denied for unauthorized email.');
-    }
+    login(email, password).then((result) => {
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.message);
+      }
+    });
   };
 
   return (
@@ -66,6 +75,28 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+            </div>
+
+            {/* Authorized Emails Info */}
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+              <button
+                type="button"
+                onClick={() => setShowAuthorizedEmails(!showAuthorizedEmails)}
+                className="flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900 w-full"
+              >
+                <Info className="h-4 w-4" />
+                <span>View authorized emails</span>
+              </button>
+              
+              {showAuthorizedEmails && (
+                <div className="mt-3 space-y-1">
+                  {authorizedEmails.map((email, index) => (
+                    <p key={index} className="text-xs text-blue-800 font-mono">
+                      • {email}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
 
             {error && (
