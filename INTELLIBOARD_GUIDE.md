@@ -60,13 +60,29 @@
 - Upper and lower bound predictions
 - AI-generated insights
 
-#### 6. **Reports** 📄
+#### 6. **AI Chatbot** 💬
+- **Interactive Q&A about your dataset**
+- Natural language queries
+- Instant statistical analysis
+- **Capabilities:**
+  - Dataset summaries
+  - Calculate averages, min, max, median
+  - Detect anomalies and outliers
+  - Analyze trends and patterns
+  - Generate insights
+  - Answer specific column questions
+  - Correlation analysis
+  - Help and guidance
+- Quick question buttons for common queries
+- Real-time chat interface with typing indicators
+
+#### 7. **Reports** 📄
 - Generate comprehensive analytics reports
 - Download reports in various formats
 - Filter and search reports
 - Report history tracking
 
-#### 7. **Settings** ⚙️
+#### 8. **Settings** ⚙️
 - Profile management
 - Notification preferences
 - Security settings (password change)

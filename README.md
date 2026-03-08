@@ -37,6 +37,14 @@
 - Historical vs predicted data comparison
 - AI-generated recommendations
 
+#### 4. **AI Chatbot** 💬
+- Interactive Q&A about your uploaded dataset
+- Natural language queries for instant insights
+- Statistical analysis (averages, min, max, median)
+- Anomaly detection and trend analysis
+- Dataset summaries and recommendations
+- Quick question buttons for common queries
+
 ### 📈 **Additional Features**
 - CSV file upload and parsing
 - Comprehensive reports management
