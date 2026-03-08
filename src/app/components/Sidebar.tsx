@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Brain, Upload, BarChart3, Sparkles, Wand2, FileText, Settings, LogOut } from 'lucide-react';
+import { Brain, Upload, BarChart3, Sparkles, Wand2, FileText, Settings, LogOut, MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 
@@ -13,6 +13,7 @@ export function Sidebar() {
     { path: '/data-cleaning', label: 'Smart Data Cleaning', icon: Sparkles },
     { path: '/ai-insights', label: 'AI Data Insights', icon: Brain },
     { path: '/ai-prediction', label: 'AI Prediction Model', icon: Wand2 },
+    { path: '/chatbot', label: 'AI Chatbot', icon: MessageSquare },
     { path: '/reports', label: 'Reports', icon: FileText },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
@@ -20,7 +21,7 @@ export function Sidebar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="w-64 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white min-h-screen flex flex-col shadow-xl">
+    <div className="w-64 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white h-screen flex flex-col shadow-xl sticky top-0">
       {/* Logo & Branding */}
       <div className="p-6 border-b border-gray-700">
         <div className="flex items-center gap-3">

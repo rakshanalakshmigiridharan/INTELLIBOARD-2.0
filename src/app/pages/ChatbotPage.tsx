@@ -351,7 +351,7 @@ export function ChatbotPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col gap-6">
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
@@ -402,7 +402,7 @@ export function ChatbotPage() {
       )}
 
       {/* Chat Interface */}
-      <Card className="shadow-lg">
+      <Card className="shadow-lg flex flex-col flex-1 min-h-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-indigo-600" />
@@ -412,8 +412,8 @@ export function ChatbotPage() {
             Powered by IntelliBoard AI - Get instant insights about your data
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="h-[500px] overflow-y-auto p-6 space-y-4 bg-gray-50">
+        <CardContent className="p-0 flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4 bg-gray-50">
             {messages.map((message, index) => (
               <div
                 key={index}
